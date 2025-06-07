@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Models;
 
-public class CreateBookingRequest
+public class Booking
 {
     public string EventId { get; set; } = null!;
 

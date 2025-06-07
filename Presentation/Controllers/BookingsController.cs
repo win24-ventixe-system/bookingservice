@@ -17,9 +17,9 @@ public class BookingsController(IBookingService bookingsService) : ControllerBas
         if(!ModelState.IsValid)
         return BadRequest(ModelState);
 
-        var result = await _bookingsService.CreateBookingasync (req);
-        return result.Success 
-            ? Ok(result) 
+        var booking = await _bookingsService.CreateBookingasync (req);
+        return booking.Success 
+            ? Ok(booking) 
             : StatusCode(StatusCodes.Status500InternalServerError, "Unable to create booking.");
     }
 }

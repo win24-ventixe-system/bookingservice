@@ -11,7 +11,7 @@ public class BookingService(IBookingRepository bookingRepository) : IBookingServ
 
     public async Task<BookingResult> CreateBookingasync(CreateBookingRequest req)
     {
-        var bookingEntity = new Data.Entities.BookingEntity
+        var bookingEntity = new BookingEntity
         {
             EventId = req.EventId,
             BookingDate = DateTime.Now,
