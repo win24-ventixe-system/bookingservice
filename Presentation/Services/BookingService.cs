@@ -86,11 +86,7 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
 
             bookings.Add(new Booking
             {
-                BookingId = booking.Id,
                 EventId = booking.EventId,
-                EventTitle = eventData?.Title!,
-                EventDate = eventData?.EventDate ?? DateTime.MinValue,
-                Location = eventData?.Location!,
                 FirstName = booking.BookingOwner!.FirstName,
                 LastName = booking.BookingOwner!.LastName,
                 Email = booking.BookingOwner!.Email,
