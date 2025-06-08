@@ -36,9 +36,9 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
             };
 
             var result = await _bookingRepository.AddAsync(bookingEntity);
-            return result.Success
-                ? new BookingResult { Success = true }
-                : new BookingResult { Success = false, Error = result.Error };
+
+            if (!result.Success)
+                return new BookingResult { Success = false, Error = result.Error };
 
             // Get Event Info from external service
             var eventData = await _eventClient.GetEventByIdAsync(req.EventId);
@@ -56,7 +56,9 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
             };
 
             // Send confirmation email (assuming EmailService is injected)
-            await _emailService.SendBookingConfirmation(emailModel); 
+            await _emailService.SendBookingConfirmation(emailModel);
+
+            return new BookingResult { Success = true };
         }
         catch (Exception ex)
         {
@@ -84,7 +86,11 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
 
             bookings.Add(new Booking
             {
+                BookingId = booking.Id,
                 EventId = booking.EventId,
+                EventTitle = eventData?.Title!,
+                EventDate = eventData?.EventDate ?? DateTime.MinValue,
+                Location = eventData?.Location!,
                 FirstName = booking.BookingOwner!.FirstName,
                 LastName = booking.BookingOwner!.LastName,
                 Email = booking.BookingOwner!.Email,
