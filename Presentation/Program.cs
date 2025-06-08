@@ -7,12 +7,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("AllowAll", x =>
+    {
+        x.AllowAnyOrigin();
+        x.AllowAnyHeader();
+        x.AllowAnyMethod();
+        
+    });
+});
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
+builder.Services.AddHttpClient<IEventServiceClient, EventServiceClient>(client =>
+{
+    client.BaseAddress = new Uri("https://eventservice-ventixe-2025-evecf8epa0azawhq.swedencentral-01.azurewebsites.net");
+});
 
 var app = builder.Build();
 app.MapOpenApi();
@@ -26,7 +41,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();

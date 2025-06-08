@@ -4,6 +4,8 @@ namespace Presentation.Services
 {
     public interface IBookingService
     {
-        Task<BookingResult> CreateBookingasync(CreateBookingRequest req);
+        Task<BookingResult> CreateBookingAsync(CreateBookingRequest req);
+
+        Task<BookingResult<IEnumerable<Booking>>> GetBookingsAsync();
     }
 }
