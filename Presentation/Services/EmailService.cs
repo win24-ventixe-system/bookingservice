@@ -1,15 +1,26 @@
 ﻿using Azure;
 using Azure.Communication.Email;
 using Presentation.Models;
+using Microsoft.Extensions.Configuration;
 
 
 public class EmailService : IEmailService
 {
     private readonly EmailClient _emailClient;
+    private readonly IConfiguration _configuration;
 
-    public EmailService()
+    public EmailService(IConfiguration configuration)
     {
-        string connectionString = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING")!;
+        _configuration = configuration;
+        string connectionString = _configuration.GetConnectionString("AzureEmailConnectionString")!;
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new ArgumentNullException(
+                nameof(connectionString),
+                "Azure Communication Service Email connection string 'ConnectionStrings:ConnectionString' is missing or empty. " +
+                "Please configure it in appsettings.json or as an environment variable/Azure App Service setting."
+            );
+        }
         _emailClient = new EmailClient(connectionString);
     }
 
@@ -46,7 +57,7 @@ public class EmailService : IEmailService
                     </html>";
 
         var emailMessage = new EmailMessage(
-            senderAddress: "DoNotReply@549e2035-9a59-4511-a3d1-dc80494178d6.azurecomm.net",
+            senderAddress: _configuration.GetConnectionString("SenderEmail"),
             content: new EmailContent(subject)
             {
                 PlainText = plainTextContent,
