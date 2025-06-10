@@ -87,6 +87,7 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
 
             bookings.Add(new Booking
             {
+                Id = booking.Id,
                 EventId = booking.EventId,
                 FirstName = booking.BookingOwner!.FirstName,
                 LastName = booking.BookingOwner!.LastName,
@@ -121,6 +122,7 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
 
             bookings.Add(new Booking
             {
+                Id = booking.Id,
                 EventId = booking.EventId,
                 FirstName = booking.BookingOwner!.FirstName,
                 LastName = booking.BookingOwner!.LastName,
