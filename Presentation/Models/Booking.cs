@@ -20,4 +20,11 @@ public class Booking
     public DateTime BookingDate { get; set; }
     public int TicketQuantity { get; set; } = 1;
 
+    // --- Event-related properties here ---
+    public string EventTitle { get; set; } = null!;
+    public DateTime EventDate { get; set; } 
+    public string EventLocation { get; set; } = null!;
+    public decimal EventPrice { get; set; } 
+    public decimal TotalPrice { get; set; } 
+
 }
