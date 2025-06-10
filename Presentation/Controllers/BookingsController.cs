@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using Presentation.Services;
@@ -28,5 +29,22 @@ public class BookingsController(IBookingService bookingsService) : ControllerBas
     {
         var bookings = await _bookingsService.GetBookingsAsync();
         return Ok(bookings);
+    }
+
+    [HttpGet("my")]
+    [Authorize]
+    public async Task<IActionResult> GetMyBookings()
+    {
+        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized();
+
+        var result = await _bookingsService.GetBookingsForUserAsync(email);
+
+        if (!result.Success)
+            return StatusCode(500, result.Error);
+
+        return Ok(result.Result);
     }
 }

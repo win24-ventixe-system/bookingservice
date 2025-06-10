@@ -46,12 +46,13 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
             // Create email model from saved booking + event info
             var emailModel = new BookingConfirmationEmail
             {
-                Id = bookingEntity.Id.ToString(), // This is your booking reference
+                Id = bookingEntity.Id.ToString(), // This is the booking reference
                 FirstName = req.FirstName,
                 Email = req.Email,
                 EventTitle = eventData?.Title ?? "Unknown Event",
                 EventDate = eventData?.EventDate ?? DateTime.Now,
                 TotalPrice = eventData?.Packages?.FirstOrDefault()?.Price ?? 0,
+                BookingDate = req.BookingDate,
                 TicketQuantity = req.TicketQuantity.ToString()
             };
 
@@ -94,10 +95,47 @@ public class BookingService(IBookingRepository bookingRepository, IEventServiceC
                 PostalCode = booking.BookingOwner.Address.PostalCode,
                 City = booking.BookingOwner.Address.City,
                 PackageOption = eventData?.Packages.FirstOrDefault()?.Title!,
+                BookingDate = booking.BookingDate,
                 TicketQuantity = booking.TicketQuantity
             });
         }
         return new BookingResult<IEnumerable<Booking>>() { Success = true, Result = bookings };
     }
+
+    public async Task<BookingResult<IEnumerable<Booking>>> GetBookingsForUserAsync(string email)
+    {
+        var result = await _bookingRepository.GetAllAsync();
+        if (result.Result == null)
+        {
+            return new BookingResult<IEnumerable<Booking>>() { Success = true, Result = new List<Booking>() };
+        }
+
+        var userBookings = result.Result
+            .Where(b => b.BookingOwner != null && b.BookingOwner.Email == email)
+            .ToList();
+
+        var bookings = new List<Booking>();
+        foreach (var booking in userBookings)
+        {
+            var eventData = await _eventClient.GetEventByIdAsync(booking.EventId);
+
+            bookings.Add(new Booking
+            {
+                EventId = booking.EventId,
+                FirstName = booking.BookingOwner!.FirstName,
+                LastName = booking.BookingOwner!.LastName,
+                Email = booking.BookingOwner!.Email,
+                StreetName = booking.BookingOwner.Address!.StreetName,
+                PostalCode = booking.BookingOwner.Address.PostalCode,
+                City = booking.BookingOwner.Address.City,
+                PackageOption = eventData?.Packages.FirstOrDefault()?.Title ?? "Unknown",
+                BookingDate = booking.BookingDate,
+                TicketQuantity = booking.TicketQuantity
+            });
+        }
+
+        return new BookingResult<IEnumerable<Booking>>() { Success = true, Result = bookings };
+    }
+
 
 }

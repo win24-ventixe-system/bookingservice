@@ -8,5 +8,6 @@ public class BookingConfirmationEmail
     public string EventTitle { get; set; } = null!;
     public string TicketQuantity { get; set; } = null!;
     public DateTime EventDate { get; set; }
+    public DateTime BookingDate { get; set; }
     public decimal TotalPrice { get; set; }
 }

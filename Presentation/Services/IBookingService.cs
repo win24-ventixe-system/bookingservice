@@ -7,5 +7,7 @@ namespace Presentation.Services
         Task<BookingResult> CreateBookingAsync(CreateBookingRequest req);
 
         Task<BookingResult<IEnumerable<Booking>>> GetBookingsAsync();
+
+        Task<BookingResult<IEnumerable<Booking>>> GetBookingsForUserAsync(string email);
     }
 }

@@ -16,6 +16,7 @@ public class CreateBookingRequest
 
     public string City { get; set; } = null!;
     public string PackageOption { get; set; } = null!;
+    public DateTime BookingDate { get; set; }
 
     public int TicketQuantity { get; set; } = 1;
 
