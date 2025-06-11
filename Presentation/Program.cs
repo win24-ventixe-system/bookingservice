@@ -31,6 +31,12 @@ builder.Services.AddHttpClient<IEventServiceClient, EventServiceClient>(client =
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.MapOpenApi();
 
 app.UseSwagger();

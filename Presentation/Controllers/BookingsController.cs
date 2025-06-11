@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
@@ -15,13 +16,28 @@ public class BookingsController(IBookingService bookingsService) : ControllerBas
     [HttpPost]
     public async Task<IActionResult> Create (CreateBookingRequest req)
     {
-        if(!ModelState.IsValid)
+
+        if (!ModelState.IsValid)
         return BadRequest(ModelState);
 
-        var booking = await _bookingsService.CreateBookingAsync (req);
-        return booking.Success 
-            ? Ok(booking) 
-            : StatusCode(StatusCodes.Status500InternalServerError, "Unable to create booking.");
+        var bookingResult = await _bookingsService.CreateBookingAsync (req);
+        if (bookingResult.Success)
+        {
+            // Return the booking data directly for easier frontend access
+            return Ok(new
+            {
+                success = true,
+                result = bookingResult.Result,
+                id = bookingResult.Result?.Id, 
+                bookingDate = bookingResult.Result?.BookingDate,
+                message = "Booking created successfully"
+            });
+        }
+        else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, bookingResult.Error);
+        }
+
     }
 
     [HttpGet]
